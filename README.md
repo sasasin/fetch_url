@@ -109,7 +109,7 @@ lifecycle and the worker pool.
 
 ## 日本語
 
-pi に `fetch_url` ツールを追加する拡張です。MCP 経由の URL 取得（タブ 1 個を直列）と違い、
+pi に `fetch_url` ツールを追加する拡張です。
 専用の Chromium を起動して **URL ごとに独立した BrowserContext** を切るため、最大 16 URL を
 既定 4（最大 8）ワーカーで同時並列に取得できます。課金なし・外部サービスなし。
 
