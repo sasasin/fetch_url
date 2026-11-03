@@ -41,7 +41,12 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Load the extension through jiti (the way pi does)
+        run: npm run test:load
+
+      # selftest.mjs imports .ts directly, which needs Node 22.6+ (type stripping).
       - name: Self-test (parallel fetch through the runner's Chrome)
+        if: matrix.node != '20'
         run: >-
           node selftest.mjs --concurrency 4 --mode text
           https://example.com/
@@ -49,6 +54,7 @@ jobs:
           https://quotes.toscrape.com/js/
 
       - name: Self-test (permanent failure stops after one attempt)
+        if: matrix.node != '20'
         run: >-
           node selftest.mjs --concurrency 2
           https://this-host-does-not-exist.invalid/

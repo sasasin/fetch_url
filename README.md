@@ -117,12 +117,20 @@ the character count.
 
 ## Self-test without pi
 
-The core is importable on its own:
+The core is importable on its own (**needs Node 22.6+**, because `selftest.mjs` imports `.ts`
+directly and relies on native type stripping):
 
 ```bash
 npm install --omit=dev
 node selftest.mjs --concurrency 4 --mode text https://news.ycombinator.com/ https://quotes.toscrape.com/js/
 node selftest.mjs --abort-after 1500 --concurrency 2 https://httpbin.org/delay/8 https://example.com/
+```
+
+To check the extension on any supported Node version, load it the way pi does (through jiti):
+
+```bash
+npm install
+npm run test:load
 ```
 
 ## Automated updates (Renovate + Actions lockfile)
@@ -153,9 +161,13 @@ This repository keeps its dependencies fresh with two mechanisms:
 ## Development
 
 ```bash
-npm install      # devDependencies (typescript, pi types) are not published
-npm run typecheck
+npm install      # devDependencies (typescript, pi types, jiti) are not published
+npm run check    # typecheck + jiti load test
+npm run selftest # optional live fetch
 ```
+
+CI (`.github/workflows/ci.yml`) runs typecheck and the jiti load test on Node 20 / 22 / 24, and the
+live self-test on Node 22 and 24.
 
 Layout: `index.ts` is the thin pi tool-registration layer, `fetch-core.ts` holds the Playwright
 lifecycle and the worker pool.
