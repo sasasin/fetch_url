@@ -46,14 +46,14 @@ jobs:
 
       - name: Self-test (parallel fetch through the runner's Chrome)
         run: >-
-          node selftest.mjs --concurrency 4 --mode text
+          node tests/selftest.mjs --concurrency 4 --mode text
           https://example.com/
           https://news.ycombinator.com/
           https://quotes.toscrape.com/js/
 
       - name: Self-test (permanent failure stops after one attempt)
         run: >-
-          node selftest.mjs --concurrency 2
+          node tests/selftest.mjs --concurrency 2
           https://this-host-does-not-exist.invalid/
           https://example.com/
 
