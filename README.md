@@ -136,10 +136,14 @@ npm install
 npm run test:load
 ```
 
-## Automated updates (Renovate + Actions lockfile)
+## Releases and automated updates (tagpr + Renovate + Actions lockfile)
 
-This repository keeps its dependencies fresh with two mechanisms:
+This repository keeps its dependencies fresh with three mechanisms:
 
+- **tagpr** (`.github/workflows/tagpr.yml` + `.tagpr`) watches `main`, keeps one open release pull
+  request with the unreleased changes, and tags it (plus creates a GitHub Release) when you merge.
+  `tagpr.versionFile = package.json`, so the git tag and the npm version stay in sync; the tag is
+  what you publish from. `tagpr.changelog = false` because `CHANGELOG.md` is written by hand.
 - **Renovate** (`renovate.json`) updates `dependencies` / `devDependencies` in `package.json`,
   runs `lockFileMaintenance` weekly for `package-lock.json`, and bumps the Actions in
   `.github/workflows/`. Renovate itself has to be installed as a GitHub App on the repository
@@ -193,6 +197,8 @@ pi に `fetch_url` ツールを追加する拡張です。
 出力は `aria`（アクセシビリティスナップショット）/ `text`（innerText）/ `html`（生 HTML）。
 依存更新は Renovate（`renovate.json`）と GitHub Actions の workflow lockfile
 （`.github/workflows/actions.lock`、`gh actions-lock` で生成）で自動化しています。
+リリースは tagpr（`.github/workflows/tagpr.yml`）が行い、`main` への push で release PR が
+更新され、マージでタグと GitHub Release が作られます（`versionFile = package.json`）。
 挙動・環境変数・`/fetch-url-update` による依存追随の詳細は上の各節を参照してください。
 
 ## License
