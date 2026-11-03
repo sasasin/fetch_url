@@ -126,8 +126,13 @@ in-extension self-update command:
 
 ## Self-test without pi
 
-The core is importable on its own (**Node 22.19+**, the same floor as pi itself — `tests/selftest.mjs`
-imports `.ts` directly and relies on native type stripping):
+Run these from a git clone (the git source lives at `~/.pi/agent/git/github.com/sasasin/fetch_url`)
+or from the source tree — **not** from the `npm:` installed copy: Node refuses to strip types for
+files under `node_modules`, so `selftest.mjs` cannot import `fetch-core.ts` there. The extension
+itself is unaffected, because pi loads it through jiti. Hence `tests/` is kept out of the npm
+tarball.
+
+Needs Node 22.19+ (the same floor as pi itself — `selftest.mjs` relies on native type stripping):
 
 ```bash
 npm install --omit=dev
@@ -135,7 +140,7 @@ node tests/selftest.mjs --concurrency 4 --mode text https://news.ycombinator.com
 node tests/selftest.mjs --abort-after 1500 --concurrency 2 https://httpbin.org/delay/8 https://example.com/
 ```
 
-To check the extension the way pi loads it (through jiti, no browser started):
+To check tool registration without starting a browser (uses jiti from `devDependencies`):
 
 ```bash
 npm install

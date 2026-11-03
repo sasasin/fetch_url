@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.1
+
+- `tests/` is no longer shipped in the npm tarball. Node refuses to strip TypeScript types for
+  files under `node_modules`, so `node tests/selftest.mjs` could never work from an `npm:`-installed
+  copy (`ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING`), and `tests/test-load.mjs` needs jiti, which
+  lives in `devDependencies`. The scripts stay in the repository and run from a git clone
+  (`~/.pi/agent/git/github.com/sasasin/fetch_url`) or the source tree.
+- README: the self-test section now says where the scripts can run, and notes that the extension
+  itself is unaffected because pi loads it through jiti.
+
 ## 0.1.0
 
 Initial public release.
