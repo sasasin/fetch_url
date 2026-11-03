@@ -14,3 +14,4 @@ Initial public release.
   `PI_FETCH_URL_CHANNEL`.
 - Idle browser reuse with a 3-minute auto-close, closed on `session_shutdown`.
 - `/fetch-url-update` slash command to bump `playwright-core` inside the declared range.
+- Requires Node 22.19+ (the same floor as `@earendil-works/pi-coding-agent`); Node 20 is end-of-life since 2026-04-30 and is not tested.

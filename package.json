@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/sasasin/fetch_url#readme",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.19.0"
   },
   "pi": {
     "extensions": [

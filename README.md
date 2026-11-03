@@ -7,6 +7,9 @@ No MCP, no API billing, no external service.
 
 ## Install
 
+Requires Node **22.19+** (the same floor as pi itself) and a browser: system Chrome/Edge, or
+Playwright's Chromium — see [Browser requirement](#browser-requirement).
+
 ```bash
 # from npm
 pi install npm:@sasasin/fetch-url
@@ -117,8 +120,8 @@ the character count.
 
 ## Self-test without pi
 
-The core is importable on its own (**needs Node 22.6+**, because `selftest.mjs` imports `.ts`
-directly and relies on native type stripping):
+The core is importable on its own (**Node 22.19+**, the same floor as pi itself — `selftest.mjs`
+imports `.ts` directly and relies on native type stripping):
 
 ```bash
 npm install --omit=dev
@@ -126,7 +129,7 @@ node selftest.mjs --concurrency 4 --mode text https://news.ycombinator.com/ http
 node selftest.mjs --abort-after 1500 --concurrency 2 https://httpbin.org/delay/8 https://example.com/
 ```
 
-To check the extension on any supported Node version, load it the way pi does (through jiti):
+To check the extension the way pi loads it (through jiti, no browser started):
 
 ```bash
 npm install
@@ -166,8 +169,8 @@ npm run check    # typecheck + jiti load test
 npm run selftest # optional live fetch
 ```
 
-CI (`.github/workflows/ci.yml`) runs typecheck and the jiti load test on Node 20 / 22 / 24, and the
-live self-test on Node 22 and 24.
+CI (`.github/workflows/ci.yml`) runs typecheck, the jiti load test and the live self-test on
+Node 22 and 24.
 
 Layout: `index.ts` is the thin pi tool-registration layer, `fetch-core.ts` holds the Playwright
 lifecycle and the worker pool.

@@ -2,8 +2,8 @@
 /**
  * pi と同じ jiti 経由で拡張をロードし、登録内容が生きていることを確認する。
  *   node test-load.mjs
- * pi は TypeScript 拡張を jiti で読み込むため、このテストは Node 20 でも通る
- * （selftest.mjs の方は .ts を直接 import するので Node 22.6+ が必要）。
+ * pi と同じ jiti 経路で読むので、ブラウザを起動せずに登録内容だけ確認できる
+ * （selftest.mjs は .ts を直接 import するため型ストリッピング可能な Node 22.19+ が要る）。
  */
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
