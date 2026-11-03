@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * pi と同じ jiti 経由で拡張をロードし、登録内容が生きていることを確認する。
- *   node test-load.mjs
+ *   node tests/test-load.mjs
  * pi と同じ jiti 経路で読むので、ブラウザを起動せずに登録内容だけ確認できる
  * （selftest.mjs は .ts を直接 import するため型ストリッピング可能な Node 22.19+ が要る）。
  */
@@ -9,7 +9,9 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createJiti } from "jiti";
 
-const root = dirname(fileURLToPath(import.meta.url));
+// このスクリプトは tests/ にあるので、パッケージルートは親ディレクトリ
+const here = dirname(fileURLToPath(import.meta.url));
+const root = resolve(here, "..");
 const jiti = createJiti(import.meta.url, { moduleCache: false });
 
 const mod = await jiti.import(resolve(root, "index.ts"));

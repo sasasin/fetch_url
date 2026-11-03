@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
  * 自己テスト: pi の拡張 runtime を使わず fetch-core.ts を直接叩く。
- *   node selftest.mjs [--concurrency N] [--mode aria|text|html] [--max-chars N] <url...>
+ *   node tests/selftest.mjs [--concurrency N] [--mode aria|text|html] [--max-chars N] <url...>
  * 並列度 1（read_url 相当の直列）と 4 を同じ URL 群で比べるため、
  * 実行のたびに --concurrency を変えて 2 回流すと差が見える。
  */
-import { fetchPages, closeBrowser } from "./fetch-core.ts";
+import { fetchPages, closeBrowser } from "../fetch-core.ts";
 
 const args = process.argv.slice(2);
 let concurrency = 4;

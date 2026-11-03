@@ -36,7 +36,7 @@
   "files": [
     "index.ts",
     "fetch-core.ts",
-    "selftest.mjs",
+    "tests",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
@@ -46,9 +46,10 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test:load": "node test-load.mjs",
-    "selftest": "node selftest.mjs --concurrency 4 --mode text https://example.com/ https://news.ycombinator.com/",
-    "check": "npm run typecheck && npm run test:load"
+    "test:load": "node tests/test-load.mjs",
+    "selftest": "node tests/selftest.mjs --concurrency 4 --mode text https://example.com/ https://news.ycombinator.com/",
+    "test": "npm run typecheck && npm run test:load",
+    "check": "npm run test"
   },
   "dependencies": {
     "playwright-core": "^1.64.1"

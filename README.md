@@ -120,13 +120,13 @@ the character count.
 
 ## Self-test without pi
 
-The core is importable on its own (**Node 22.19+**, the same floor as pi itself — `selftest.mjs`
+The core is importable on its own (**Node 22.19+**, the same floor as pi itself — `tests/selftest.mjs`
 imports `.ts` directly and relies on native type stripping):
 
 ```bash
 npm install --omit=dev
-node selftest.mjs --concurrency 4 --mode text https://news.ycombinator.com/ https://quotes.toscrape.com/js/
-node selftest.mjs --abort-after 1500 --concurrency 2 https://httpbin.org/delay/8 https://example.com/
+node tests/selftest.mjs --concurrency 4 --mode text https://news.ycombinator.com/ https://quotes.toscrape.com/js/
+node tests/selftest.mjs --abort-after 1500 --concurrency 2 https://httpbin.org/delay/8 https://example.com/
 ```
 
 To check the extension the way pi loads it (through jiti, no browser started):
@@ -173,7 +173,8 @@ CI (`.github/workflows/ci.yml`) runs typecheck, the jiti load test and the live 
 Node 22 and 24.
 
 Layout: `index.ts` is the thin pi tool-registration layer, `fetch-core.ts` holds the Playwright
-lifecycle and the worker pool.
+lifecycle and the worker pool, and `tests/` carries the two test scripts (`selftest.mjs` for a
+live parallel fetch, `test-load.mjs` for loading the extension through jiti the way pi does).
 
 ## 日本語
 
