@@ -1,6 +1,6 @@
 {
   "name": "@sasasin/fetch-url",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pi extension that fetches many web pages at once by driving Playwright directly: one Chromium, one BrowserContext per URL, concurrent navigation, no MCP and no API billing.",
   "type": "module",
   "license": "MIT",
