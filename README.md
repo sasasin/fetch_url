@@ -39,8 +39,7 @@ project scope:
 | `pi -e npm:…` / `pi -e git:…` (one run, not persisted) | `~/.pi/agent/tmp/extensions/npm-<hash>/node_modules/@sasasin/fetch-url` / `~/.pi/agent/tmp/extensions/git-github.com-<hash>` |
 | manual local extension folder | `~/.pi/agent/extensions/fetch-url` |
 
-`-e` installs are throwaway and get a fresh hash per run. The `/fetch-url-update` command runs
-`npm install` in the folder it was loaded from (override with `PI_FETCH_URL_DIR`).
+`-e` installs are throwaway and get a fresh hash per run.
 
 ### Browser requirement
 
@@ -105,18 +104,25 @@ the character count.
 | `PI_FETCH_URL_HEADLESS=0` | run headed (default: headless) |
 | `PI_FETCH_URL_CHANNEL=chrome\|msedge\|chromium` | force one channel; `""` = embedded Chromium only |
 | `PI_FETCH_URL_NO_SANDBOX=1` | `chromiumSandbox: false` (some containers / distros) |
-| `PI_FETCH_URL_DIR=<path>` | override where `/fetch-url-update` runs `npm install` (default: this package's folder) |
 
 ## Keeping `playwright-core` current
 
-`package.json` pins a range (`^1.64.1`).
+The published range is `^1.64.1` and `package-lock.json` records the resolved version. There is no
+in-extension self-update command:
 
-- Installed via `pi install npm:` / `git:` → `pi update --extensions` reconciles the package,
-  and for git sources Playwright itself is reinstalled.
-- Placed as a local extension → pi does not touch local dependencies. Use the bundled slash
-  command instead: `/fetch-url-update` runs `npm install` in the package folder and drops the
-  running browser plus the module cache, so the next `fetch_url` call uses the new version.
-  No `/reload` needed.
+- **Renovate** opens PRs for the dependency range, the lockfile (weekly `lockFileMaintenance`) and
+  the Actions in `.github/workflows/`; **tagpr** turns merged work into a tagged release.
+- Installed with `pi install npm:` or `git:` → **`pi update --extensions`** reinstalls this package,
+  so `playwright-core` is fetched again. Then restart pi or run `/reload` so the extension module is
+  re-imported. For a git source pi also runs `git clean -fdx` before reinstalling, which is exactly
+  why an in-place `npm install` from inside the extension would not survive the next update.
+- If you keep an unpacked development copy at `~/.pi/agent/extensions/fetch-url`, pi never touches
+  its dependencies (`docs/packages.md`: local packages are not installed or modified). Update that
+  copy yourself:
+
+  ```bash
+  npm install --omit=dev --prefix ~/.pi/agent/extensions/fetch-url
+  ```
 
 ## Self-test without pi
 
@@ -199,7 +205,7 @@ pi に `fetch_url` ツールを追加する拡張です。
 （`.github/workflows/actions.lock`、`gh actions-lock` で生成）で自動化しています。
 リリースは tagpr（`.github/workflows/tagpr.yml`）が行い、`main` への push で release PR が
 更新され、マージでタグと GitHub Release が作られます（`versionFile = package.json`）。
-挙動・環境変数・`/fetch-url-update` による依存追随の詳細は上の各節を参照してください。
+挙動・環境変数・`playwright-core` の追随（Renovate と `pi update --extensions`）の詳細は上の各節を参照してください。
 
 ## License
 
