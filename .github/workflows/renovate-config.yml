@@ -1,0 +1,61 @@
+name: Renovate configuration
+
+on:
+  pull_request:
+    paths:
+      - renovate.json
+      - .github/workflows/renovate-config.yml
+  push:
+    branches:
+      - main
+    paths:
+      - renovate.json
+      - .github/workflows/renovate-config.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: renovate-config-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate Renovate configuration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+
+      - name: Validate renovate.json
+        shell: bash
+        run: |
+          set -uo pipefail
+
+          validator_output="$(mktemp)"
+          trap 'rm -f "$validator_output"' EXIT
+
+          set +e
+          npx --yes --package renovate -- renovate-config-validator 2>&1 | tee "$validator_output"
+          validator_status="${PIPESTATUS[0]}"
+          set -e
+
+          if [[ "$validator_status" -ne 0 ]]; then
+            echo "::error::Renovate config validator failed with exit code $validator_status"
+            exit "$validator_status"
+          fi
+
+          if grep -Eq '^[[:space:]]*(WARN|ERROR):' "$validator_output"; then
+            echo "::error::Renovate config validator reported a warning or error"
+            exit 1
+          fi

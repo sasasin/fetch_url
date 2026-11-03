@@ -1,0 +1,41 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "minimumReleaseAge": "3 days",
+  "constraints": {
+    "ghActionsLock": "v0.4.1"
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 4am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "pi 本体と typebox は pi が供給する。peerDependencies の range は更新しない",
+      "matchDepTypes": ["peerDependencies"],
+      "enabled": false
+    },
+    {
+      "description": "GitHub Actions の更新は gh actions-lock で actions.lock も同じ PR に再生成する",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "description": "playwright-core は major / minor / patch を別 PR に分ける",
+      "matchPackageNames": ["playwright-core"],
+      "separateMinorPatch": true
+    },
+    {
+      "description": "playwright-core の patch は CI が検証するので自動マージ、major/minor は人手",
+      "matchPackageNames": ["playwright-core"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "description": "0.x 系は自動マージしない",
+      "matchCurrentVersion": "/^0/",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": false
+    }
+  ]
+}

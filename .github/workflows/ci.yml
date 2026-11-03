@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Typecheck & self-test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["20", "22", "24"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Self-test (parallel fetch through the runner's Chrome)
+        run: >-
+          node selftest.mjs --concurrency 4 --mode text
+          https://example.com/
+          https://news.ycombinator.com/
+          https://quotes.toscrape.com/js/
+
+      - name: Self-test (permanent failure stops after one attempt)
+        run: >-
+          node selftest.mjs --concurrency 2
+          https://this-host-does-not-exist.invalid/
+          https://example.com/
+
+      - name: Package contents
+        run: npm pack --dry-run
