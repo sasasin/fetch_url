@@ -20,6 +20,24 @@ Restart pi, or run `/reload` in a running session.
 
 > If you previously dropped this folder into `~/.pi/agent/extensions/fetch-url`,
 > remove that copy first — loading both registers the tool name `fetch_url` twice.
+> The same applies to installing the npm and the git source side by side.
+
+### Where it is installed
+
+pi puts the package (and its `node_modules`) under its agent directory, or under `.pi/` for
+project scope:
+
+| Install command | Extension folder (the place to `cd` into for maintenance) |
+|---|---|
+| `pi install npm:@sasasin/fetch-url` | `~/.pi/agent/npm/node_modules/@sasasin/fetch-url` |
+| `pi install -l npm:@sasasin/fetch-url` (project) | `<project>/.pi/npm/node_modules/@sasasin/fetch-url` |
+| `pi install git:github.com/sasasin/fetch_url` | `~/.pi/agent/git/github.com/sasasin/fetch_url` |
+| `pi install -l git:github.com/sasasin/fetch_url` (project) | `<project>/.pi/git/github.com/sasasin/fetch_url` |
+| `pi -e npm:…` / `pi -e git:…` (one run, not persisted) | `~/.pi/agent/tmp/extensions/npm-<hash>/node_modules/@sasasin/fetch-url` / `~/.pi/agent/tmp/extensions/git-github.com-<hash>` |
+| manual local extension folder | `~/.pi/agent/extensions/fetch-url` |
+
+`-e` installs are throwaway and get a fresh hash per run. The `/fetch-url-update` command runs
+`npm install` in the folder it was loaded from (override with `PI_FETCH_URL_DIR`).
 
 ### Browser requirement
 
@@ -27,10 +45,20 @@ Restart pi, or run `/reload` in a running session.
 
 1. system Google Chrome (`channel: "chrome"`)
 2. Microsoft Edge (`channel: "msedge"`)
-3. Playwright's bundled Chromium (`channel: "chromium"`) — install it with
-   `npx playwright install chromium` run inside the package folder
+3. Playwright's bundled Chromium (`channel: "chromium"`) — to add it, run the installer
+   **from the package folder**, so the build matches this extension's `playwright-core` version:
 
-If none is available you get `browser launch failed: could not launch a browser (tried …)`.
+   ```bash
+   cd ~/.pi/agent/git/github.com/sasasin/fetch_url      # npm source: ~/.pi/agent/npm/node_modules/@sasasin/fetch-url
+   npx --no-install playwright-core install chromium    # → ~/.cache/ms-playwright/chromium-<build>
+   ```
+
+   A bare `npx playwright install chromium` resolves `playwright` from the registry instead and
+   may install a different Chromium build that this extension will not use.
+
+If none of the three is available you get `browser launch failed: could not launch a browser (tried …)`.
+The download directory honours `PLAYWRIGHT_BROWSERS_PATH`; it is shared with other Playwright users
+on the machine, not inside the extension folder.
 
 ## Usage
 
@@ -115,8 +143,12 @@ pi に `fetch_url` ツールを追加する拡張です。
 
 インストールは `pi install npm:@sasasin/fetch-url`、またはこのリポジトリを直接
 `pi install git:github.com/sasasin/fetch_url`（`pi update --extensions` で追随）。
-`playwright-core` にはブラウザバイナリが含まれないため、システムの Chrome / Edge が無い場合は
-パッケージフォルダで `npx playwright install chromium` が必要です。
+設置先は `npm:` なら `~/.pi/agent/npm/node_modules/@sasasin/fetch-url`、
+`git:` なら `~/.pi/agent/git/github.com/sasasin/fetch_url`（上に一覧表あり）。
+`playwright-core` にはブラウザバイナリが含まれないため、システムの Chrome / Edge も無い環境では、
+パッケージフォルダで `npx --no-install playwright-core install chromium` を実行して
+`~/.cache/ms-playwright/` にブラウザを追加してください。素の `npx playwright install chromium` は
+別バージョンの Chromium を入れることがあるので注意。
 出力は `aria`（アクセシビリティスナップショット）/ `text`（innerText）/ `html`（生 HTML）。
 挙動・環境変数・`/fetch-url-update` による依存追随の詳細は上の各節を参照してください。
 
