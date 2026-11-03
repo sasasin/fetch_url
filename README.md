@@ -5,30 +5,6 @@ it fetches many web pages **at the same time** by driving Playwright directly �
 one Chromium process, one isolated `BrowserContext` per URL.
 No MCP, no API billing, no external service.
 
-## Why a separate tool
-
-MCP-based URL readers usually go through a single browser tab
-(`browser_navigate` → `browser_snapshot`), so fetches are serialized and often guarded by a
-process-wide browser lock. On a 10-URL burst that single tab mostly times out.
-
-`fetch_url` launches its **own** Chromium and gives every URL a fresh context, so navigation is
-genuinely concurrent.
-
-| | MCP `read_url` style | `fetch_url` |
-|---|---|---|
-| Path | `browser_navigate` → `browser_snapshot` | `playwright-core` → `chromium.launch()` |
-| Browser | shared MCP Chromium, 1 tab | private Chromium, **one context per URL** |
-| Concurrency | serialized by a lock | worker pool (default 4, max 8, 16 URLs per call) |
-| Output | accessibility snapshot | `aria` (same shape) / `text` (innerText) / `html` (source) |
-| Cost | none | none |
-
-Measured on Linux + system Google Chrome, 4 URLs (1 SPA, 2 static, 1 bad DNS):
-
-| concurrency | wall time | sum of per-URL time |
-|---|---|---|
-| 1 (serialized) | 5493 ms | 5493 ms |
-| 4 | 2865 ms | 7432 ms |
-
 ## Install
 
 ```bash
