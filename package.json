@@ -36,7 +36,6 @@
   "files": [
     "index.ts",
     "fetch-core.ts",
-    "tests",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
