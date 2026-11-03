@@ -79,7 +79,7 @@ let launching: Promise<Browser> | null = null;
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
 
 /**
- * このパッケージ自身のルートディレクトリ。
+ * このパッケージ自身のルートディレクトリ（エラー案内の文言に出す）。
  * ローカル拡張として ~/.pi/agent/extensions/ に置いても、
  * pi install された npm / git パッケージでも、import 元の位置から求める。
  */
@@ -89,11 +89,6 @@ export function packageDir(): string {
 	} catch {
 		return process.cwd();
 	}
-}
-
-/** 依存更新コマンドが npm install を叩く場所（PI_FETCH_URL_DIR で上書き可能） */
-export function installDir(): string {
-	return process.env.PI_FETCH_URL_DIR ?? packageDir();
 }
 
 /** 重い依存の読み込みはツール実行時まで遅らせる（拡張の factory では何もしない） */
@@ -119,14 +114,6 @@ function channelCandidates(): Array<string | undefined> {
 	if (fromEnv !== undefined) return [fromEnv === "" ? undefined : fromEnv];
 	// playwright-core にはブラウザバイナリが同梱されないため、内蔵 chromium は最後に試す。
 	return ["chrome", "msedge", "chromium"];
-}
-
-/**
- * 依存更新後に module cache を捨てる。
- * /fetch-url-update の後、次の fetch で新しい playwright-core を import し直す。
- */
-export function resetRuntime(): void {
-	pw = null;
 }
 
 async function launchBrowser(headless: boolean): Promise<Browser> {

@@ -14,11 +14,9 @@ import { Type } from "typebox";
 import {
 	closeBrowser,
 	DEFAULTS,
-	installDir,
 	MAX_CONCURRENCY,
 	MAX_URLS,
 	fetchPages,
-	resetRuntime,
 	type PageFetch,
 } from "./fetch-core.ts";
 
@@ -136,49 +134,6 @@ export default function (pi: ExtensionAPI) {
 					ms: Date.now() - startedAt,
 				},
 			};
-		},
-	});
-
-	/*
-	 * 依存追随用。docs/packages.md の通り local 拡張は `pi install`/`pi update --extensions` の
-	 * 対象外（「Local packages are not installed or modified, so their dependency tree remains
-	 * the package author's responsibility」）なので、pi update では playwright-core が追随しない。
-	 * package.json の range が ^1.64.1 なので、このコマンドがその range 内の最新に合わせる。
-	 */
-	pi.registerCommand("fetch-url-update", {
-		description: "fetch_url の playwright-core を package.json の range 内の最新に更新する",
-		handler: async (_args, ctx) => {
-			const dir = installDir();
-			// 古いライブラリで起動済みの Chromium と import cache を先に捨てる
-			await closeBrowser();
-			resetRuntime();
-
-			const install = (await pi.exec("npm", [
-				"--prefix",
-				dir,
-				"install",
-				"--omit=dev",
-				"--no-audit",
-				"--no-fund",
-			])) as { code?: number; stdout?: string; stderr?: string };
-
-			if (install.code !== 0) {
-				ctx.ui.notify(
-					`fetch-url-update 失敗 (exit ${install.code}): ${String(install.stderr ?? install.stdout ?? "").replace(/\s+/g, " ").slice(0, 220)}`,
-					"error"
-				);
-				return;
-			}
-
-			const listing = (await pi.exec("npm", ["--prefix", dir, "ls", "playwright-core", "--depth=0"])) as {
-				stdout?: string;
-			};
-			const line =
-				String(listing.stdout ?? "")
-					.split("\n")
-					.find((row) => row.includes("playwright-core"))
-					?.trim() ?? "";
-			ctx.ui.notify(`fetch_url 更新完了: ${line || "playwright-core"}（拡張の /reload 不要、次の呼び出しから新しい版を使う）`, "info");
 		},
 	});
 

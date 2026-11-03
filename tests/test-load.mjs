@@ -41,7 +41,7 @@ try {
 
 const checks = [
 	["fetch_url tool registered", tools.includes("fetch_url")],
-	["fetch-url-update command registered", commands.includes("fetch-url-update")],
+	["registers no slash commands (updates go through pi update --extensions)", commands.length === 0],
 	["session_shutdown handler registered", events.includes("session_shutdown")],
 	["packageDir() resolves to this folder", resolve(core.packageDir()) === root],
 	["playwright-core is resolvable from the extension", playwrightResolvable],
